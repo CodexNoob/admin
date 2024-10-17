@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id       String @id @map("_id") @db.ObjectId
+  username String @unique
+}
+
+model Student {
+  id        String   @id @map("_id") @db.ObjectId
+  username  String   @unique
+  name      String
+  surname   String
+  email     String?  @unique
+  phone     String   @unique
+  address   String
+  sex       UserSex
+  createdAt DateTime @default(now())
+  results   Result[] @relation("StudentResults")
+  events    Event[]  @relation("StudentEvents")
+  birthday  DateTime
+}
+
+model Exam {
+  id        String   @id @map("_id")
+  name      String   @unique
+  startTime DateTime
+  endTime   DateTime
+  results   Result[] @relation("ExamResults")
+}
+
+model Result {
+  id    String @id @map("_id") @db.ObjectId
+  score Int
+
+  examId    String
+  exam      Exam    @relation("ExamResults", fields: [examId], references: [id])
+  studentId String  @db.ObjectId
+  student   Student @relation("StudentResults", fields: [studentId], references: [id])
+}
+
+model Event {
+  id          String   @id @map("_id") @db.ObjectId
+  title       String
+  description String?
+  startTime   DateTime
+  endTime     DateTime
+
+  studentId String
+  student   Student @relation("StudentEvents", fields: [studentId], references: [id])
+}
+
+model Announcement {
+  id          String   @id @map("_id") @db.ObjectId
+  title       String
+  description String?
+  date        DateTime
+}
+
+enum UserSex {
+  Male
+  Female
+}

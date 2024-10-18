@@ -2,7 +2,8 @@ import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-import { role, studentsData } from "@/lib/data";
+import prisma from "@/db";
+import { role } from "@/lib/data";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -49,7 +50,9 @@ const columns = [
   },
 ];
 
-const StudentListPage = () => {
+const StudentListPage = async () => {
+  const studentsData = await prisma.student.findMany({});
+
   const renderRow = (item: Student) => (
     <tr
       key={item.id}
@@ -75,16 +78,18 @@ const StudentListPage = () => {
       <td>
         <div className="flex items-center gap-2">
           {/* <Link href={`/list/teachers/${item.id}`}> */}
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky"
-            aria-label="sort">
-              <Image src="/view.png" alt="" width={16} height={16} />
-            </button>
+          <button
+            className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky"
+            aria-label="sort"
+          >
+            <Image src="/view.png" alt="" width={16} height={16} />
+          </button>
           {/* </Link> */}
           {role === "admin" && (
             // <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaPurple">
             //   <Image src="/delete.png" alt="" width={16} height={16} />
             // </button>
-            <FormModal table="student" type="delete" id={item.id}/>
+            <FormModal table="student" type="delete" id={item.id} />
           )}
         </div>
       </td>
@@ -99,19 +104,23 @@ const StudentListPage = () => {
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           <TableSearch />
           <div className="flex items-center gap-4 self-end">
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow"
-            aria-label="view">
+            <button
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow"
+              aria-label="view"
+            >
               <Image src="/filter.png" alt="" width={14} height={14} />
             </button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow" 
-            aria-label="sort">
+            <button
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow"
+              aria-label="sort"
+            >
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
             {role === "admin" && (
               // <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
               //   <Image src="/plus.png" alt="" width={14} height={14} />
               // </button>
-              <FormModal table="student" type="create"/>
+              <FormModal table="student" type="create" />
             )}
           </div>
         </div>

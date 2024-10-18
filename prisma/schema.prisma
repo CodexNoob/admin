@@ -14,19 +14,20 @@ datasource db {
 }
 
 model Admin {
-  id       String @id @map("_id") @db.ObjectId
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
   username String @unique
 }
 
 model Student {
-  id        String   @id @map("_id") @db.ObjectId
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  studentId String
   username  String   @unique
   name      String
   surname   String
   email     String?  @unique
   phone     String   @unique
   address   String
-  sex       UserSex
+  sex       Gender
   createdAt DateTime @default(now())
   results   Result[] @relation("StudentResults")
   events    Event[]  @relation("StudentEvents")
@@ -34,7 +35,7 @@ model Student {
 }
 
 model Exam {
-  id        String   @id @map("_id")
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String   @unique
   startTime DateTime
   endTime   DateTime
@@ -42,34 +43,33 @@ model Exam {
 }
 
 model Result {
-  id    String @id @map("_id") @db.ObjectId
-  score Int
-
-  examId    String
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  score     Int
+  examId    String  @db.ObjectId
   exam      Exam    @relation("ExamResults", fields: [examId], references: [id])
   studentId String  @db.ObjectId
   student   Student @relation("StudentResults", fields: [studentId], references: [id])
 }
 
 model Event {
-  id          String   @id @map("_id") @db.ObjectId
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String?
   startTime   DateTime
   endTime     DateTime
 
-  studentId String
+  studentId String  @db.ObjectId
   student   Student @relation("StudentEvents", fields: [studentId], references: [id])
 }
 
 model Announcement {
-  id          String   @id @map("_id") @db.ObjectId
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String?
   date        DateTime
 }
 
-enum UserSex {
-  Male
-  Female
+enum Gender {
+  MALE
+  FEMALE
 }

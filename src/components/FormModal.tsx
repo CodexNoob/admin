@@ -1,5 +1,6 @@
 "use client";
 
+import axios from "axios";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useState } from "react";
@@ -20,7 +21,7 @@ const forms: {
   [key: string]: (type: "create" | "update", data?: any) => JSX.Element;
 } = {
   teacher: (type, data) => <TeacherForm type={type} data={data} />,
-  student: (type, data) => <StudentForm type={type} data={data} />
+  student: (type, data) => <StudentForm type={type} data={data} />,
 };
 
 const FormModal = ({
@@ -29,12 +30,7 @@ const FormModal = ({
   data,
   id,
 }: {
-  table:
-    | "student"
-    | "exam"
-    | "result"
-    | "event"
-    | "announcement";
+  table: "student" | "exam" | "result" | "event" | "announcement";
   type: "create" | "update" | "delete";
   data?: any;
   id?: number;
@@ -55,7 +51,17 @@ const FormModal = ({
         <span className="text-center font-medium">
           All data will be lost. Are you sure you want to delete this {table}?
         </span>
-        <button className="bg-red-700 text-white py-2 px-4 rounded-md border-none w-max self-center">
+        <button
+          className="bg-red-700 text-white py-2 px-4 rounded-md border-none w-max self-center"
+          onClick={async () => {
+            try {
+              await axios.delete(`/api/students/${id}`);
+            } catch (error) {
+              console.error("error deleting data: ", error);
+              throw error;
+            }
+          }}
+        >
           Delete
         </button>
       </form>
@@ -70,7 +76,7 @@ const FormModal = ({
     <>
       <button
         className={`${size} flex items-center justify-center rounded-full ${bgColor}`}
-        onClick={() => setOpen(true)} 
+        onClick={() => setOpen(true)}
         aria-label={`Open ${type}`}
       >
         <Image src={`/${type}.png`} alt="" width={16} height={16} />
